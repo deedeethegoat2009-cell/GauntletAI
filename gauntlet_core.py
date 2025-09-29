@@ -1,10 +1,24 @@
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")  # Securely pulls your key from Streamlit secrets
+
 class GauntletAI:
     def __init__(self):
-        pass  # You can add cooldowns, logging, etc. here
+        pass
 
     def run_match(self, combatant1, combatant2, format, lore1="", lore2=""):
-        # Simulate a verdict (placeholder logic)
-        intro = f"🔥 [{format}] Match Initiated: {combatant1} vs {combatant2}"
-        lore_section = f"\n📜 Lore A: {lore1}\n📜 Lore B: {lore2}" if lore1 or lore2 else ""
-        verdict = f"\n⚔️ Verdict: {combatant1} overwhelms {combatant2} in a decisive clash!"  # You can randomize or format this
-        return intro + lore_section + verdict + "\n\n✅ VERDICT SEALED"
+        prompt = f"""
+You are GauntletAI, a mythic battle narrator. Simulate a cinematic battle between {combatant1} and {combatant2} in the format: {format}.
+Include lore, stat scaling, emotional stakes, and a final verdict.
+Combatant A Lore: {lore1}
+Combatant B Lore: {lore2}
+Respond with a dramatic narration and seal the verdict.
+"""
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.9
+        )
+        return response['choices'][0]['message']['content']
+
